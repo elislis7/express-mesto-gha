@@ -5,14 +5,7 @@ const getAllCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards.map(
       ({ _id, name, link, owner, likes }) => ({ _id, name, link, owner, likes }))))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' })
-      } else {
-      res.status(500).send({ message: err.message })
-      }
-    }
-  );
+    .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 // создаёт карточку
@@ -21,7 +14,8 @@ const createCard = (req, res) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then(({ _id, name, link, owner, likes }) => res.send({ _id, name, link, owner, likes }))
+    .then(({ _id, name, link, owner, likes }) =>
+      res.status(200).send({ _id, name, link, owner, likes }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' })
@@ -58,9 +52,9 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `Передан несуществующий ${_id} карточки` })
+        res.status(404).send({ message: 'Передан несуществующий _id карточки' })
       }
-      res.send(card.likes)
+      res.status(201).send(card.likes)
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -79,7 +73,7 @@ const removeLikeCard = (req, res) => {
       if (!card) {
         res.status(404).send({ message: `Передан несуществующий ${_id} карточки` })
       }
-      res.send(card.likes)
+      res.status(200).send(card.likes)
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
