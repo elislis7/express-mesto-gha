@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const { isValidObjectId } = require('mongoose');
 
 // возвращает все карточки
 const getAllCards = (req, res) => {
@@ -42,6 +43,10 @@ const likeCard = (req, res) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
+  if (!isValidObjectId(userId) || !isValidObjectId(cardId)) {
+    return res.status(400).send({message: 'Переданы некорректные данные для постановки лайка' });
+  }
+
   Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: userId } },
@@ -53,13 +58,23 @@ const likeCard = (req, res) => {
       }
       res.status(201).send(card.likes)
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 // удаляет лайк на карточке
 const removeLikeCard = (req, res) => {
   const { cardId } = req.params;
   const userId = req.user._id;
+
+  if (!isValidObjectId(userId) || !isValidObjectId(cardId)) {
+    return res.status(400).send({message: 'Переданы некорректные данные для постановки лайка' });
+  }
 
   Card.findByIdAndUpdate(
     cardId,
@@ -72,7 +87,13 @@ const removeLikeCard = (req, res) => {
       }
       res.status(200).send(card.likes)
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для снятии лайка' });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports = {
