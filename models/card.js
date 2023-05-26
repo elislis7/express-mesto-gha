@@ -9,8 +9,7 @@ const cardSchema = new mongoose.Schema({
   },
 
   link: { // ссылка на картинку, строка, обязательно поле.
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    type: String,
     required: true,
   },
 

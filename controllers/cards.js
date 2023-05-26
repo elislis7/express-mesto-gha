@@ -3,8 +3,7 @@ const Card = require('../models/card');
 // возвращает все карточки
 const getAllCards = (req, res) => {
   Card.find({})
-    .then((cards) => res.send(cards.map(
-      ({ _id, name, link, owner, likes }) => ({ _id, name, link, owner, likes }))))
+    .then((cards) => res.send(cards))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
@@ -14,28 +13,26 @@ const createCard = (req, res) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then(({ _id, name, link, owner, likes }) =>
-      res.status(200).send({ _id, name, link, owner, likes }))
+    .then((cards) => res.status(201).send(cards))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' })
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
-      res.status(500).send({ message: err.message })
+        res.status(500).send({ message: err.message });
       }
-    }
-  );
+    });
 };
 
 // удаляет карточку
 const removeCard = (req, res) => {
   const { cardId } = req.params;
 
-  Card.findByIdAndRemove({ _id: cardId })
+  Card.deleteOne({ _id: cardId })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `Карточка с указанным ${_id} не найдена` })
+        res.status(404).send({ message: `Карточка с указанным _id не найдена` })
       }
-      res.send({ card })
+      res.send({ message: 'Карточка удалена' })
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -71,7 +68,7 @@ const removeLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `Передан несуществующий ${_id} карточки` })
+        return res.status(404).send({ message: `Передан несуществующий _id карточки` })
       }
       res.status(200).send(card.likes)
     })
