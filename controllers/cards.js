@@ -28,6 +28,10 @@ const createCard = (req, res) => {
 const removeCard = (req, res) => {
   const { cardId } = req.params;
 
+  if (!isValidObjectId(cardId)) {
+    return res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
+  }
+
   Card.deleteOne({ _id: cardId })
     .then((card) => {
       if (!card) {
