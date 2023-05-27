@@ -14,28 +14,26 @@ const getUsersByID = (req, res) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден' })
+        return res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       }
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректный _id пользователя' })
+        return res.status(400).send({ message: 'Переданы некорректный _id пользователя' });
       }
-      res.status(500).send({ message: err.message })
-    }
-  );
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 // создаёт пользователя
 const createUser = (req, res) => {
   User.create(req.body)
-    .then((data) => res.send({ data }))
+    .then((data) => res.status(201).send({ data }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' })
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
-      res.status(500).send({ message: err.message })
+        res.status(500).send({ message: err.message });
       }
-    }
-  );
+    });
 };
 
 // редактирует инфо пользователя
@@ -53,13 +51,12 @@ const updateUserInfo = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' })
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else {
-      res.status(404).send({ message: 'Пользователь с указанным _id не найден'})
+        return res.status(404).send({ message: 'Пользователь с указанным _id не найден'});
       }
-      res.status(500).send({ message: err.message })
-    }
-  );
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 // редактирует аватар пользователя
@@ -77,13 +74,12 @@ const updateUserAvatar = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' })
+        return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else {
-      res.status(404).send({ message: 'Пользователь с указанным _id не найден' })
+        return res.status(404).send({ message: 'Пользователь с указанным _id не найден' });
       }
-      res.status(500).send({ message: err.message })
-    }
-  );
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports = {

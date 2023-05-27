@@ -32,12 +32,12 @@ const removeCard = (req, res) => {
     return res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
   }
 
-  Card.deleteOne({ _id: cardId })
+  Card.findByIdAndRemove({ _id: cardId })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: `Карточка с указанным _id не найдена` })
+        return res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
       }
-      res.send({ message: 'Карточка удалена' })
+      return res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -58,9 +58,9 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки' })
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
       }
-      res.status(201).send(card.likes)
+      return res.status(201).send(card.likes);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -77,7 +77,7 @@ const removeLikeCard = (req, res) => {
   const userId = req.user._id;
 
   if (!isValidObjectId(userId) || !isValidObjectId(cardId)) {
-    return res.status(400).send({message: 'Переданы некорректные данные для постановки лайка' });
+    return res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
   }
 
   Card.findByIdAndUpdate(
@@ -87,9 +87,9 @@ const removeLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: `Передан несуществующий _id карточки` })
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
       }
-      res.status(200).send(card.likes)
+      return res.status(200).send(card.likes);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
