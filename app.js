@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-const { users, login, createUser } = require('./routes/users');
+const { login, createUser } = require('./controllers/users');
+const users = require('./routes/users');
 const cards = require('./routes/cards');
 const auth = require('./middlewares/auth');
 
