@@ -37,12 +37,16 @@ const removeCard = (req, res, next) => {
     return;
   }
 
-  Card.findByIdAndRemove({ _id: cardId })
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
+        return next(new NotFoundError('Переданы некорректные данные'));
+      }
+      if (!card.owner.equals(req.user._id)) {
         return next(new ForbiddenError('Попытка удалить чужую карточку'));
       }
-      return res.send({ message: 'Карточка удалена' });
+      return card.deleteOne()
+        .then(() => res.send({ message: 'Карточка удалена' }));
     })
     .catch(next);
 };
@@ -51,11 +55,6 @@ const removeCard = (req, res, next) => {
 const likeCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
-
-  if (!isValidObjectId(userId) || !isValidObjectId(cardId)) {
-    next(new BadRequestError('Переданы некорректные данные для постановки лайка'));
-    return;
-  }
 
   Card.findByIdAndUpdate(
     cardId,
@@ -80,11 +79,6 @@ const likeCard = (req, res, next) => {
 const removeLikeCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
-
-  if (!isValidObjectId(userId) || !isValidObjectId(cardId)) {
-    next(new BadRequestError('Переданы некорректные данные для удаления лайка'));
-    return;
-  }
 
   Card.findByIdAndUpdate(
     cardId,

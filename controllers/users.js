@@ -90,7 +90,7 @@ const updateUserInfo = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         throw new NotFoundError('Пользователь с указанным _id не найден');
       }
       return (next);
@@ -114,7 +114,7 @@ const updateUserAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         throw new NotFoundError('Пользователь с указанным _id не найден');
       }
       return (next);
