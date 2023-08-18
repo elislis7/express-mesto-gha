@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const BadRequestError = require('../errors/BadRequestError');
 
-const validationUrl = (url) => {
+const urlValidation = (url) => {
   const validate = isURL(url);
   if (validate) {
     return url;
@@ -11,24 +11,24 @@ const validationUrl = (url) => {
   throw new BadRequestError('Некорректный URL адрес');
 };
 
-const validationId = (id) => {
+const idValidation = (id) => {
   const regex = /^[0-9a-fA-F]{24}$/;
   if (regex.test(id)) return id;
   throw new BadRequestError('Некорректный id');
 };
 
-module.exports.validationCreateUser = celebrate({
+const validationCreateUser = celebrate({
   body: Joi.object()
     .keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
       email: Joi.string().required().email(),
-      avatar: Joi.string().custom(validationUrl),
+      avatar: Joi.string().custom(urlValidation),
       password: Joi.string().required(),
     }),
 });
 
-module.exports.validationLogin = celebrate({
+const validationLogin = celebrate({
   body: Joi.object()
     .keys({
       email: Joi.string().required().email(),
@@ -36,14 +36,14 @@ module.exports.validationLogin = celebrate({
     }),
 });
 
-module.exports.validationUserId = celebrate({
+const validationUserId = celebrate({
   params: Joi.object()
     .keys({
-      userId: Joi.string().required().custom(validationId),
+      userId: Joi.string().required().custom(idValidation),
     }),
 });
 
-module.exports.validationUpdateUser = celebrate({
+const validationUpdateUser = celebrate({
   body: Joi.object()
     .keys({
       name: Joi.string().min(2).max(30).required(),
@@ -51,24 +51,34 @@ module.exports.validationUpdateUser = celebrate({
     }),
 });
 
-module.exports.validationUpdateAvatar = celebrate({
+const validationUpdateAvatar = celebrate({
   body: Joi.object()
     .keys({
-      avatar: Joi.string().required().custom(validationUrl),
+      avatar: Joi.string().required().custom(urlValidation),
     }),
 });
 
-module.exports.validationCreateCard = celebrate({
+const validationCreateCard = celebrate({
   body: Joi.object()
     .keys({
       name: Joi.string().min(2).max(30).required(),
-      link: Joi.string().required().custom(validationUrl),
+      link: Joi.string().required().custom(urlValidation),
     }),
 });
 
-module.exports.validationCardById = celebrate({
+const validationCardById = celebrate({
   params: Joi.object()
     .keys({
-      cardId: Joi.string().required().custom(validationId),
+      cardId: Joi.string().required().custom(idValidation),
     }),
 });
+
+module.exports = {
+  validationCreateUser,
+  validationLogin,
+  validationUserId,
+  validationUpdateUser,
+  validationUpdateAvatar,
+  validationCreateCard,
+  validationCardById,
+};

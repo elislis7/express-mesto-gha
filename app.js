@@ -17,6 +17,10 @@ app.use(express.json());
 app.post('/signup', validationCreateUser, createUser);
 app.post('/signin', validationLogin, login);
 
+req.user = {
+  _id: '5d8b8592978f8bd833ca8133'
+};
+
 app.use(auth);
 app.use(router);
 
